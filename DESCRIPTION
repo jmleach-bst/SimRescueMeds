@@ -1,0 +1,26 @@
+Package: SimRescueMeds
+Type: Package
+Title: Simulate longitudinal outcomes and time-to-rescue therapy
+Version: 0.1.0
+Authors@R: 
+    person("Justin", "Leach", , "jleach@uab.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0003-0167-9097"))
+Description: Simulate longitudinal outcomes from a linear mixed model and time-to-rescue therapy from proportional hazards models,
+	where time-to-rescue therapy may depend on the longitudinal trajectories.
+License: GPL (>= 3)
+Encoding: UTF-8
+Depends: 
+	R (>= 3.5.0),
+	matrixcalc,
+	MASS,
+	methods
+Imports: 
+	Rdpack
+Suggests:
+	nlme,
+	JM,
+	JMbayes2,
+	purrr
+RdMacros: Rdpack
+LazyData: true
+RoxygenNote: 7.3.2
