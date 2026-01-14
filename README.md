@@ -128,7 +128,9 @@ next measurement, $y_{i,j+1}$, the latter of which is unobserved in the
 study since it occurs after rescue therapy. While simple in some
 respects, this approach allows us to easily define MCAR
 $(\theta_1 = \theta_2 = 0)$, MAR $(\theta_1 \ne 0,\,\theta_2 = 0)$, or
-MNAR $(\theta_2 \ne 0)$. $$
+MNAR $(\theta_2 \ne 0)$.
+
+$$
 h_i(t) = \lambda\exp\left(y_{i,j}\theta_1 + y_{i,j+1}\theta_2\right), \quad t_{i,j} \le t < t_{i,j+1}.
 $$
 
