@@ -6,6 +6,8 @@
 #' a simulated data set.
 #' @param M Numeric. The number of simulated data sets. If \code{NULL}, then calculated
 #' internally.
+#' @param jackknife Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+#' on Koehler (2009).
 #'
 #' @importFrom stats var
 #'
@@ -32,21 +34,37 @@
 #'   se_obs = smry_ex$se_hat
 #' )
 #'
+#' mcse_modse(
+#'   se_obs = smry_ex$se_hat,
+#'   jackknife = TRUE
+#' )
+#'
 #' @references
+#' \insertRef{Koehler2009}{SimRescueMeds}
+#'
 #' \insertRef{Morris2019}{SimRescueMeds}
 #'
 #' @export
 mcse_modse <- function(
     se_obs,
-    M = NULL
+    M = NULL,
+    jackknife = FALSE
 ) {
   if (is.null(M) == TRUE) {
     M <- length(se_obs)
   }
-  ModSE <- mean(se_obs)
   var_obs <- se_obs^2
-  vhvhht <- var(var_obs)
-  ModSE_mcse <- sqrt(vhvhht / (4*M*ModSE^2))
+  ModSE <- sqrt(mean(var_obs))
+  if (jackknife == FALSE) {
+    vhvhht <- var(var_obs)
+    ModSE_mcse <- sqrt(vhvhht / (4*M*ModSE^2))
+  } else {
+    ModSE_mcse <- mcse_jackknife(
+      measure_obs = var_obs,
+      user_function = function(x) sqrt(mean(x))
+    )
+  }
+
   return(
     data.frame(
       measure = "ModSE",

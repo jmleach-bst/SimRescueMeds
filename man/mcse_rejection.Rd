@@ -8,7 +8,8 @@ mcse_rejection(
   data,
   type = "pvalues",
   alpha = 0.05,
-  measure_label = "Rejection"
+  measure_label = "Rejection",
+  jackknife = FALSE
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ if a binary vector.}
 
 \item{measure_label}{Character. What value should be assigned to column \code{measure}?
 Most users will not need to change the default of \code{"Rejection"}.}
+
+\item{jackknife}{Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+on Koehler (2009).}
 }
 \description{
 Calculate MCSE for rejection rate of a hypothesis test based on Table 6 of Morris (2019).
@@ -41,12 +45,22 @@ mcse_rejection(
   type = "pvalues"
 )
 
+rb2 <- rbinom(100, size = 1, prob = 0.15)
+
 mcse_rejection(
-  data = rbinom(100, size = 1, prob = 0.15),
+  data = rb2,
   type = "rejection"
+)
+
+mcse_rejection(
+  data = rb2,
+  type = "rejection",
+  jackknife = TRUE
 )
 
 }
 \references{
+\insertRef{Koehler2009}{SimRescueMeds}
+
 \insertRef{Morris2019}{SimRescueMeds}
 }

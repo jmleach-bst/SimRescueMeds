@@ -8,6 +8,8 @@
 #' @param alpha Numeric. The desired significance level, which should be greater than 0 and less than 1.
 #' @param measure_label Character. What value should be assigned to column \code{measure}?
 #' Most users will not need to change the default of \code{"Rejection"}.
+#' @param jackknife Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+#' on Koehler (2009).
 #'
 #' @details
 #' If If \eqn{\theta} is the true value of the estimand and \eqn{p_m} is a p-value for the hypothesis
@@ -25,12 +27,22 @@
 #'   type = "pvalues"
 #' )
 #'
+#' rb2 <- rbinom(100, size = 1, prob = 0.15)
+#'
 #' mcse_rejection(
-#'   data = rbinom(100, size = 1, prob = 0.15),
+#'   data = rb2,
 #'   type = "rejection"
 #' )
 #'
+#' mcse_rejection(
+#'   data = rb2,
+#'   type = "rejection",
+#'   jackknife = TRUE
+#' )
+#'
 #' @references
+#' \insertRef{Koehler2009}{SimRescueMeds}
+#'
 #' \insertRef{Morris2019}{SimRescueMeds}
 #'
 #' @export
@@ -38,7 +50,8 @@ mcse_rejection <- function(
     data,
     type = "pvalues", # alternatively "rejection"
     alpha = 0.05,
-    measure_label = "Rejection"
+    measure_label = "Rejection",
+    jackknife = FALSE
     ) {
       M <- length(data)
       if (type == "pvalues") {
@@ -47,7 +60,12 @@ mcse_rejection <- function(
         reject <- data
       }
       reject_rate <- mean(reject, na.rm = TRUE)
-      reject_rate_mcse <- sqrt((reject_rate * (1 - reject_rate)) / M)
+      if (jackknife == FALSE) {
+        reject_rate_mcse <- sqrt((reject_rate * (1 - reject_rate)) / M)
+      } else {
+        reject_rate_mcse <- mcse_jackknife(reject)
+      }
+
       return(
         data.frame(
           measure = measure_label,

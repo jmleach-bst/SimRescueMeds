@@ -4,7 +4,7 @@
 \alias{mcse_empse}
 \title{Calculate MCSE for Empirical SE}
 \usage{
-mcse_empse(measure_obs, mean_value = NULL, M = NULL)
+mcse_empse(measure_obs, mean_value = NULL, M = NULL, jackknife = FALSE)
 }
 \arguments{
 \item{measure_obs}{A numeric vector where each element is an estimated value from
@@ -15,6 +15,9 @@ internally.}
 
 \item{M}{Numeric. The number of simulated data sets. If \code{NULL}, then calculated
 internally.}
+
+\item{jackknife}{Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+on Koehler (2009).}
 }
 \description{
 Calculate MCSE for empirical standard error of an estimator based on Table 6 of Morris (2019).
@@ -44,7 +47,14 @@ mcse_empse(
   measure_obs = smry_ex$beta_hat
 )
 
+mcse_empse(
+  measure_obs = smry_ex$beta_hat,
+  jackknife = TRUE
+)
+
 }
 \references{
+\insertRef{Koehler2009}{SimRescueMeds}
+
 \insertRef{Morris2019}{SimRescueMeds}
 }

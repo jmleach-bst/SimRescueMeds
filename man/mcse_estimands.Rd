@@ -8,7 +8,10 @@ mcse_estimands(
   data,
   true_value = 0,
   estimand_name = "x_diff",
-  se_name = "se_diff"
+  se_name = "se_diff",
+  jackknife = c(bias = FALSE, empse = FALSE, modse = FALSE, mse = FALSE),
+  include_bias_percent = FALSE,
+  report_proportion = FALSE
 )
 }
 \arguments{
@@ -21,6 +24,17 @@ of the estimand from each simulated data set.}
 
 \item{se_name}{Character. The variable name for the column containing the estimates
 of the SE of the estimator from each simulated data set.}
+
+\item{jackknife}{Logical vector that determines whether or not jackknife estimator is
+used for MCSE. Default is \code{FALSE} for all. Note that you need to correctly name
+the elements of the vector to avoid errors. See examples.}
+
+\item{include_bias_percent}{Logical. Default is \code{FALSE}. If \code{true_value = 0},
+percent-bias is undefined and will not be returned, although a \code{warning} will
+be thrown.}
+
+\item{report_proportion}{Logical. It may be preferable to report bias proportion, which is
+done if \code{report_proportion = TRUE}.}
 }
 \value{
 A data frame.
@@ -48,6 +62,38 @@ mcse_estimands(
 
 mcse_estimands(
   data = smry_ex,
+  true_value = 0.5,
+  estimand_name = "beta_hat",
+  se_name = "se_hat",
+  include_bias_percent = TRUE,
+  report_proportion = TRUE
+)
+
+mcse_estimands(
+  data = smry_ex,
+  true_value = 0.5,
+  estimand_name = "beta_hat",
+  se_name = "se_hat",
+  include_bias_percent = TRUE,
+  report_proportion = FALSE
+)
+
+## How to specify jackknife, e.g., for ModSE
+mcse_estimands(
+  data = smry_ex,
+  true_value = 1,
+  estimand_name = "beta_hat",
+  se_name = "se_hat",
+  jackknife = c(
+    bias = FALSE,
+    empse = FALSE,
+    modse = TRUE,
+    mse = FALSE
+    )
+)
+
+mcse_estimands(
+  data = smry_ex,
   true_value = 0,
   estimand_name = "beta_hat",
   se_name = "se_hat"
@@ -55,5 +101,7 @@ mcse_estimands(
 
 }
 \references{
+\insertRef{Koehler2009}{SimRescueMeds}
+
 \insertRef{Morris2019}{SimRescueMeds}
 }

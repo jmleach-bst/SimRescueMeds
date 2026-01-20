@@ -9,7 +9,8 @@ mcse_coverage(
   true_value = 0,
   lcl_name,
   ucl_name,
-  measure_label = "Coverage"
+  measure_label = "Coverage",
+  jackknife = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ of the upper confidence limit from each simulated data set.}
 
 \item{measure_label}{Character. What value should be assigned to column \code{measure}?
 Most users will not need to change the default of \code{"Coverage"}.}
+
+\item{jackknife}{Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+on Koehler (2009).}
 }
 \description{
 Calculate MCSE for coverage of an interval estimator based on Table 6 of Morris (2019).
@@ -63,7 +67,17 @@ mcse_coverage(
   ucl_name = "ucl"
 )
 
+mcse_coverage(
+  data = smry_ex,
+  true_value = 1,
+  lcl_name = "lcl",
+  ucl_name = "ucl",
+  jackknife = TRUE
+)
+
 }
 \references{
+\insertRef{Koehler2009}{SimRescueMeds}
+
 \insertRef{Morris2019}{SimRescueMeds}
 }

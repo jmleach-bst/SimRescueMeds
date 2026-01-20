@@ -4,7 +4,7 @@
 \alias{mcse_modse}
 \title{Calculate MCSE for Model SE}
 \usage{
-mcse_modse(se_obs, M = NULL)
+mcse_modse(se_obs, M = NULL, jackknife = FALSE)
 }
 \arguments{
 \item{se_obs}{A numeric vector where each element is an estimated model-based SE value from
@@ -12,6 +12,9 @@ a simulated data set.}
 
 \item{M}{Numeric. The number of simulated data sets. If \code{NULL}, then calculated
 internally.}
+
+\item{jackknife}{Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+on Koehler (2009).}
 }
 \description{
 Calculate MCSE for model-based standard error of an estimator based on Table 6 of Morris (2019).
@@ -39,7 +42,14 @@ mcse_modse(
   se_obs = smry_ex$se_hat
 )
 
+mcse_modse(
+  se_obs = smry_ex$se_hat,
+  jackknife = TRUE
+)
+
 }
 \references{
+\insertRef{Koehler2009}{SimRescueMeds}
+
 \insertRef{Morris2019}{SimRescueMeds}
 }

@@ -7,6 +7,8 @@
 #' @param true_value Numeric. The true value of the estimand.
 #' @param M Numeric. The number of simulated data sets. If \code{NULL}, then calculated
 #' internally.
+#' @param jackknife Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+#' on Koehler (2009).
 #'
 #' @details
 #' This function calculates the Monte Carlo standard error (MCSE) for the mean squared error (MSE)
@@ -35,24 +37,46 @@
 #'
 #' mcse_mse(
 #'   measure_obs = smry_ex$beta_hat,
+#'   true_value = 1,
+#'   jackknife = TRUE
+#' )
+#'
+#' mcse_mse(
+#'   measure_obs = smry_ex$beta_hat,
 #'   true_value = 0
 #' )
 #'
+#' mcse_mse(
+#'   measure_obs = smry_ex$beta_hat,
+#'   true_value = 0,
+#'   jackknife = TRUE
+#' )
+#'
 #' @references
+#' \insertRef{Koehler2009}{SimRescueMeds}
+#'
 #' \insertRef{Morris2019}{SimRescueMeds}
 #'
 #' @export
 mcse_mse <- function(
     measure_obs,
     true_value,
-    M = NULL
+    M = NULL,
+    jackknife = FALSE
 ) {
   if (is.null(M) == TRUE) {
     M <- length(measure_obs)
   }
   mse <- (1 / M) * sum((measure_obs - true_value)^2)
   num_mse <- sum(((measure_obs - true_value)^2 - mse)^2)
-  mse_mcse <- sqrt(num_mse / (M * (M - 1)))
+  if (jackknife == FALSE) {
+    mse_mcse <- sqrt(num_mse / (M * (M - 1)))
+  } else {
+    mse_mcse <- mcse_jackknife(
+      measure_obs = (measure_obs - true_value)^2
+    )
+  }
+
   return(
     data.frame(
       measure = "MSE",

@@ -9,6 +9,8 @@
 #' @param true_value Numeric. The true value of the estimand.
 #' @param M Numeric. The number of simulated data sets. If \code{NULL}, then calculated
 #' internally.
+#' @param jackknife Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+#' on Koehler (2009).
 #'
 #' @details
 #' This function calculates the Monte Carlo standard error (MCSE) for the bias of an estimator
@@ -42,7 +44,16 @@
 #'   true_value = 0
 #' )
 #'
+#' mcse_bias(
+#'   measure_obs = smry_ex$beta_hat,
+#'   mean_value = NULL,
+#'   true_value = 0,
+#'   jackknife = TRUE
+#' )
+#'
 #' @references
+#' \insertRef{Koehler2009}{SimRescueMeds}
+#'
 #' \insertRef{Morris2019}{SimRescueMeds}
 #'
 #' @export
@@ -50,7 +61,8 @@ mcse_bias <- function(
     measure_obs,
     true_value,
     mean_value = NULL,
-    M = NULL
+    M = NULL,
+    jackknife = FALSE
 ) {
   if (is.null(M) == TRUE) {
     M <- length(measure_obs)
@@ -59,9 +71,14 @@ mcse_bias <- function(
     mean_value <- mean(measure_obs)
   }
   bias <- (1 / M) * sum(measure_obs - true_value)
-  mult <- 1 / (M * (M - 1))
-  sum_msq <- sum((measure_obs - mean_value)^2)
-  bias_mcse <- sqrt(mult * sum_msq)
+  if (jackknife == FALSE) {
+    mult <- 1 / (M * (M - 1))
+    sum_msq <- sum((measure_obs - mean_value)^2)
+    bias_mcse <- sqrt(mult * sum_msq)
+  } else {
+    bias_mcse <- mcse_jackknife(measure_obs = measure_obs - true_value)
+  }
+
   return(
     data.frame(
       measure = "Bias",

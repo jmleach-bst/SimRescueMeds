@@ -10,6 +10,8 @@
 #' of the upper confidence limit from each simulated data set.
 #' @param measure_label Character. What value should be assigned to column \code{measure}?
 #' Most users will not need to change the default of \code{"Coverage"}.
+#' @param jackknife Logical. When \code{TRUE}, calculates the jackknife estimate of MCSE based
+#' on Koehler (2009).
 #'
 #' @details
 #' If If \eqn{\theta} is the true value of the estimand, \eqn{\hat{\theta}_{L,m}} is the lower
@@ -45,7 +47,17 @@
 #'   ucl_name = "ucl"
 #' )
 #'
+#' mcse_coverage(
+#'   data = smry_ex,
+#'   true_value = 1,
+#'   lcl_name = "lcl",
+#'   ucl_name = "ucl",
+#'   jackknife = TRUE
+#' )
+#'
 #' @references
+#' \insertRef{Koehler2009}{SimRescueMeds}
+#'
 #' \insertRef{Morris2019}{SimRescueMeds}
 #'
 #' @export
@@ -54,14 +66,20 @@ mcse_coverage <- function(
     true_value = 0,
     lcl_name,
     ucl_name,
-    measure_label = "Coverage"
+    measure_label = "Coverage",
+    jackknife = FALSE
 ) {
   M <- nrow(data)
   lower_ci <- data[[lcl_name]]
   upper_ci <- data[[ucl_name]]
   covered <- ifelse(true_value >= lower_ci & true_value <= upper_ci, 1, 0)
   coverage <- mean(covered, na.rm = TRUE)
-  coverage_mcse <- sqrt((coverage * (1 - coverage)) / M)
+  if (jackknife == FALSE) {
+    coverage_mcse <- sqrt((coverage * (1 - coverage)) / M)
+  } else {
+    coverage_mcse <- mcse_jackknife(measure_obs = covered)
+  }
+
   return(
     data.frame(
       measure = measure_label,
