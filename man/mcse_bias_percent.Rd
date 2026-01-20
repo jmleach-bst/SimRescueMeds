@@ -9,7 +9,8 @@ mcse_bias_percent(
   true_value,
   mean_value = NULL,
   M = NULL,
-  report_proportion = FALSE
+  report_proportion = FALSE,
+  abs_denominator = TRUE
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ internally.}
 
 \item{report_proportion}{Logical. It may be preferable to report bias proportion, which is
 done if \code{report_proportion = TRUE}.}
+
+\item{abs_denominator}{Logical. When \code{TRUE}, takes the absolute value of \code{true_value}
+in the denominator of the percent bias formula. See details below.}
 }
 \description{
 Calculate MCSE for percent-bias based on a jackknife estimator.
@@ -40,11 +44,17 @@ of the estimand, \eqn{\bar{\theta}} is the mean estimate from the simulation stu
 }
 The percent-bias for simulated data set \eqn{i} and estimator \eqn{\hat{\theta}} is
 \deqn{
- \widehat{Bias}_{percent} = 100 \times \frac{\hat{\theta}_i - \theta}{\theta}
+ \widehat{Bias}_{percent} = 100 \times \frac{\hat{\theta}_i - \theta}{|\theta|}
 }
-There is no formula for percent-bias in Morris (2019), but Koehler (2009) describes a
-jackknife estimator that is also applied more broadly in Kelter (2024), which we can use.
-See \link[SimRescueMeds]{mcse_jackknife} for details.
+Note that by default we take \eqn{|\theta|} in the denominator so that when \eqn{\theta < 0} we properly show
+percent bias in positive and negative directions. This allows positive and negative percent bias
+relative to \code{true_value}. For example, if \code{true_value = -3}, an observed estimate
+of \eqn{\hat{\theta}_m = -3.1} would produce percent bias of \eqn{-3.33\%}. If you prefer negative percent
+bias to denote values that are shrunk in magnitude, then you can set \code{abs_denominator = FALSE}.
+
+There is no formula for MCSE of percent-bias in Morris (2019), but Koehler (2009) describes a jackknife
+estimator that is also applied more broadly in Kelter (2024), which we can use. See \link[SimRescueMeds]{mcse_jackknife}
+for details.
 }
 \examples{
 set.seed(283964)

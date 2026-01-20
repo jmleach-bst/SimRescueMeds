@@ -11,6 +11,8 @@
 #' internally.
 #' @param report_proportion Logical. It may be preferable to report bias proportion, which is
 #' done if \code{report_proportion = TRUE}.
+#' @param abs_denominator Logical. When \code{TRUE}, takes the absolute value of \code{true_value}
+#' in the denominator of the percent bias formula. See details below.
 #'
 #' @details
 #' This function calculates the Monte Carlo standard error (MCSE) for the percent bias of an estimator
@@ -22,11 +24,17 @@
 #' }
 #' The percent-bias for simulated data set \eqn{i} and estimator \eqn{\hat{\theta}} is
 #' \deqn{
-#'  \widehat{Bias}_{percent} = 100 \times \frac{\hat{\theta}_i - \theta}{\theta}
+#'  \widehat{Bias}_{percent} = 100 \times \frac{\hat{\theta}_i - \theta}{|\theta|}
 #' }
-#' There is no formula for percent-bias in Morris (2019), but Koehler (2009) describes a
-#' jackknife estimator that is also applied more broadly in Kelter (2024), which we can use.
-#' See \link[SimRescueMeds]{mcse_jackknife} for details.
+#' Note that by default we take \eqn{|\theta|} in the denominator so that when \eqn{\theta < 0} we properly show
+#' percent bias in positive and negative directions. This allows positive and negative percent bias
+#' relative to \code{true_value}. For example, if \code{true_value = -3}, an observed estimate
+#' of \eqn{\hat{\theta}_m = -3.1} would produce percent bias of \eqn{-3.33\%}. If you prefer negative percent
+#' bias to denote values that are shrunk in magnitude, then you can set \code{abs_denominator = FALSE}.
+#'
+#' There is no formula for MCSE of percent-bias in Morris (2019), but Koehler (2009) describes a jackknife
+#' estimator that is also applied more broadly in Kelter (2024), which we can use. See \link[SimRescueMeds]{mcse_jackknife}
+#' for details.
 #'
 #' @examples
 #' set.seed(283964)
@@ -61,7 +69,8 @@ mcse_bias_percent <- function(
     true_value,
     mean_value = NULL,
     M = NULL,
-    report_proportion = FALSE
+    report_proportion = FALSE,
+    abs_denominator = TRUE
 ) {
   if (is.null(M) == TRUE) {
     M <- length(measure_obs)
@@ -72,11 +81,20 @@ mcse_bias_percent <- function(
   if (true_value == 0) {
     stop("Percent bias is undefined when true_value = 0.")
   }
+
   if (report_proportion == FALSE) {
-    pbias_m <- 100*((measure_obs - true_value) / true_value)
+    if (abs_denominator == TRUE) {
+      pbias_m <- 100*((measure_obs - true_value) / abs(true_value))
+    } else {
+      pbias_m <- 100*((measure_obs - true_value) / true_value)
+    }
     measure_label <- "Percent-Bias"
   } else {
-    pbias_m <- (measure_obs - true_value) / true_value
+    if (abs_denominator == TRUE) {
+      pbias_m <- (measure_obs - true_value) / abs(true_value)
+    } else {
+      pbias_m <- (measure_obs - true_value) / true_value
+    }
     measure_label <- "Proportion-Bias"
   }
 
