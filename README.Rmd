@@ -133,9 +133,11 @@ It is good practice to report some measure of precision associated with the esti
 
 Consider a very simple example, in which we estimate the regression parameter $\beta$ from a simple linear model:
 
+
 $$
 Y_i = \alpha + X_i\beta + \epsilon_i 
 $$
+
 where $X_i$ is a binary predictor taking value 0 or 1 and $\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is straightforward and quick to simulate. Note that we would usually save both the data and the analysis, but for this demonstration it is unnecessary. Below we use `mcse_estimands()`, which reports several estimates and MCSE for some typical estimands of interest. In this case the data frame input only consists of a column for estimates of $\hat{\beta}$ and a column for estimates of $\widehat{SE}(\hat{\beta})$. We have arguments for `estimand_name` and `se_name`, which tells the function which columns are which, and we need to specify `true_value` in order to calculate, e.g., bias. We see that for this relatively simple model, even $M = 2500$ produces relatively small MCSE for every measure except percent-bias. In general, we may except the MCSE to decrease with increasing $M$.
 
 ```{r, message=FALSE}
