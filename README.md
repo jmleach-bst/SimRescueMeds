@@ -33,7 +33,7 @@ You can install the development version of `SimRescueMeds` from
 pak::pak("jmleach-bst/SimRescueMeds")
 ```
 
-## Examples
+## Simulation examples
 
 First, load the package.
 
@@ -202,10 +202,116 @@ head(post_rt, 15)
 #> 15               1     7.294891
 ```
 
+## Calculation of Monte Carlo Standard Errors (MCSE)
+
+It is good practice to report some measure of precision associated with
+the estimates from a simulation study, because in general the results
+can change if a new seed, and therefore new data, are generated. We
+largely follow Morris, White, and Crowther (2019) in using formulas for
+these calculations, but we also include options for jackknife estimation
+of MCSE, as described by Koehler, Brown, and Haneuse (2009) and
+re-emphasized by Kelter (2024). These are general functions that are not
+necessarily dependent on simulating interrcurrent events. For example,
+consider estimating the regression parameter $\beta$ from a simple
+linear model:
+
+$$
+Y_i = \alpha + X_i\beta + \epsilon_i 
+$$ where $X_i$ is a binary predictor taking value 0 or 1 and
+$\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is easy to simulate;
+note that we would usually save both the data and the analysis, but for
+this demonstration it is unnecessary. Below we use `mcse_estimands()`,
+which reports several estimates and MCSE for some typical estimands of
+interest.
+
+``` r
+# Set seed
+set.seed(723862)
+
+# Number of simulations
+M <- 2500
+
+# Sample size
+N <- 150
+
+# Parameters
+alpha <- 0.5
+beta <- 1.5
+sigma <- 1.25
+
+# Balanced groups
+x <- c(
+  rep(1, N/2),
+  rep(0, N/2)
+)
+
+# Simulate data
+beta_hat <- c()
+se_hat <- c()
+for (m in 1:M) {
+  dfm <- data.frame(
+    x = x,
+    y = alpha + x*beta + rnorm(N, 0, sigma)
+  )
+  lm_m <- lm(
+    formula = y ~ x,
+    data = dfm 
+  )
+  beta_hat[m] <- coefficients(lm_m)["x"]
+  se_hat[m] <- summary(lm_m)$coefficients["x", "Std. Error"]
+}
+df <- data.frame(beta_hat, se_hat)
+
+knitr::kable(
+  mcse_estimands(
+  data = df,
+  estimand_name = "beta_hat",
+  se_name = "se_hat",
+  include_bias_percent = TRUE,
+  report_proportion = FALSE,
+  true_value = beta
+)
+)
+```
+
+| measure      |   estimate |      mcse |
+|:-------------|-----------:|----------:|
+| Percent-Bias | -0.0242720 | 0.2715892 |
+| Bias         | -0.0003641 | 0.0040738 |
+| EmpSE        |  0.2036919 | 0.0028812 |
+| ModSE        |  0.2040271 | 0.0002385 |
+| MSE          |  0.0414739 | 0.0012012 |
+
 # References
 
 <div id="refs" class="references csl-bib-body hanging-indent"
 entry-spacing="0">
+
+<div id="ref-Kelter2024" class="csl-entry">
+
+Kelter, Riko. 2024. “The Bayesian Simulation Study (BASIS) Framework for
+Simulation Studies in Statistical and Methodological Research.”
+*Biometrical Journal* 66 (January).
+<https://doi.org/10.1002/bimj.202200095>.
+
+</div>
+
+<div id="ref-Koehler2009" class="csl-entry">
+
+Koehler, Elizabeth, Elizabeth Brown, and Sebastien J. P. A. Haneuse.
+2009. “On the Assessment of Monte Carlo Error in Simulation-Based
+Statistical Analyses.” *American Statistician* 63: 155–62.
+<https://doi.org/10.1198/tast.2009.0030>.
+
+</div>
+
+<div id="ref-Morris2019" class="csl-entry">
+
+Morris, Tim P., Ian R. White, and Michael J. Crowther. 2019. “Using
+Simulation Studies to Evaluate Statistical Methods.” *Statistics in
+Medicine* 38: 2074–2102. <https://doi.org/10.1002/sim.8086>.
+
+</div>
 
 <div id="ref-Thomadakis2019" class="csl-entry">
 

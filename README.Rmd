@@ -34,7 +34,7 @@ You can install the development version of `SimRescueMeds` from [GitHub](https:/
 pak::pak("jmleach-bst/SimRescueMeds")
 ```
 
-## Examples
+## Simulation examples
 
 First, load the package.
 
@@ -125,6 +125,65 @@ post_rt <- exclude_post_tte(
 )
 
 head(post_rt, 15)
+```
+
+## Calculation of Monte Carlo Standard Errors (MCSE)
+
+It is good practice to report some measure of precision associated with the estimates from a simulation study, because in general the results can change if a new seed, and therefore new data, are generated. We largely follow @Morris2019 in using formulas for these calculations, but we also include options for jackknife estimation of MCSE, as described by @Koehler2009 and re-emphasized by @Kelter2024. These are general functions that are not necessarily dependent on simulating interrcurrent events. For example, consider estimating the regression parameter $\beta$ from a simple linear model:
+
+$$
+Y_i = \alpha + X_i\beta + \epsilon_i 
+$$
+where $X_i$ is a binary predictor taking value 0 or 1 and $\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is easy to simulate; note that we would usually save both the data and the analysis, but for this demonstration it is unnecessary. Below we use `mcse_estimands()`, which reports several estimates and MCSE for some typical estimands of interest.
+
+```{r, message=FALSE}
+# Set seed
+set.seed(723862)
+
+# Number of simulations
+M <- 2500
+
+# Sample size
+N <- 150
+
+# Parameters
+alpha <- 0.5
+beta <- 1.5
+sigma <- 1.25
+
+# Balanced groups
+x <- c(
+  rep(1, N/2),
+  rep(0, N/2)
+)
+
+# Simulate data
+beta_hat <- c()
+se_hat <- c()
+for (m in 1:M) {
+  dfm <- data.frame(
+    x = x,
+    y = alpha + x*beta + rnorm(N, 0, sigma)
+  )
+  lm_m <- lm(
+    formula = y ~ x,
+    data = dfm 
+  )
+  beta_hat[m] <- coefficients(lm_m)["x"]
+  se_hat[m] <- summary(lm_m)$coefficients["x", "Std. Error"]
+}
+df <- data.frame(beta_hat, se_hat)
+
+knitr::kable(
+  mcse_estimands(
+  data = df,
+  estimand_name = "beta_hat",
+  se_name = "se_hat",
+  include_bias_percent = TRUE,
+  report_proportion = FALSE,
+  true_value = beta
+)
+)
 ```
 
 # References {-}
