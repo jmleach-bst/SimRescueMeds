@@ -70,7 +70,8 @@ mcse_bias <- function(
   if (is.null(mean_value) == TRUE) {
     mean_value <- mean(measure_obs)
   }
-  bias <- (1 / M) * sum(measure_obs - true_value)
+  #bias <- (1 / M) * sum(measure_obs - true_value)
+  bias <- mean(measure_obs - true_value)
   if (jackknife == FALSE) {
     mult <- 1 / (M * (M - 1))
     sum_msq <- sum((measure_obs - mean_value)^2)
