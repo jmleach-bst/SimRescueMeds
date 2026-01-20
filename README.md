@@ -20,6 +20,8 @@ on longitudinal data.
     data, produce MCAR, MAR, or MNAR missingness on the longitudinal
     data using either exponential or Weibull models.
 3.  We also intend to develop functions that can modify post-event data.
+    Only one of these has been developed thus far,
+    `rescue_effect_means()`; see documentation for details.
 
 ## Installation
 

@@ -19,11 +19,11 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of `SimRescueMeds` is to enable (relatively) simple simulation studies that impose rescue medication (or really any intercurrent event) on longitudinal data.  
+The goal of `SimRescueMeds` is to enable (relatively) simple simulation studies that impose rescue medication (or really any intercurrent event) on longitudinal data. 
 
 1. Longitudinal data is simulated according a linear mixed model. This is the data one would observe if no intercurrent event, e.g., rescue therapy, occurs.
 2. Rescue medication/intercurrent events are simulated using models adapted from @Thomadakis2019, which allows for reasonably straightforward generation of events that, if excluding post-event data, produce MCAR, MAR, or MNAR missingness on the longitudinal data using either exponential or Weibull models. 
-3. We also intend to develop functions that can modify post-event data.  
+3. We also intend to develop functions that can modify post-event data. Only one of these has been developed thus far, `rescue_effect_means()`; see documentation for details. 
 
 ## Installation
 
