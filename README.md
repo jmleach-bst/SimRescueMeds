@@ -211,18 +211,27 @@ largely follow Morris, White, and Crowther (2019) in using formulas for
 these calculations, but we also include options for jackknife estimation
 of MCSE, as described by Koehler, Brown, and Haneuse (2009) and
 re-emphasized by Kelter (2024). These are general functions that are not
-necessarily dependent on simulating interrcurrent events. For example,
-consider estimating the regression parameter $\beta$ from a simple
-linear model:
+necessarily dependent on simulating interrcurrent events.
+
+Consider a very simple example, in which we estimate the regression
+parameter $\beta$ from a simple linear model:
 
 $$
 Y_i = \alpha + X_i\beta + \epsilon_i 
 $$ where $X_i$ is a binary predictor taking value 0 or 1 and
-$\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is easy to simulate;
-note that we would usually save both the data and the analysis, but for
-this demonstration it is unnecessary. Below we use `mcse_estimands()`,
-which reports several estimates and MCSE for some typical estimands of
-interest.
+$\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is straightforward and
+quick to simulate. Note that we would usually save both the data and the
+analysis, but for this demonstration it is unnecessary. Below we use
+`mcse_estimands()`, which reports several estimates and MCSE for some
+typical estimands of interest. In this case the data frame input only
+consists of a column for estimates of $\hat{\beta}$ and a column for
+estimates of $\widehat{SE}(\hat{\beta})$. We have arguments for
+`estimand_name` and `se_name`, which tells the function which columns
+are which, and we need to specify `true_value` in order to calculate,
+e.g., bias. We see that for this relatively simple model, even
+$M = 2500$ produces relatively small MCSE for every measure except
+percent-bias. In general, we may except the MCSE to decrease with
+increasing $M$.
 
 ``` r
 # Set seed
@@ -264,13 +273,13 @@ df <- data.frame(beta_hat, se_hat)
 
 knitr::kable(
   mcse_estimands(
-  data = df,
-  estimand_name = "beta_hat",
-  se_name = "se_hat",
-  include_bias_percent = TRUE,
-  report_proportion = FALSE,
-  true_value = beta
-)
+    data = df,
+    estimand_name = "beta_hat",
+    se_name = "se_hat",
+    include_bias_percent = TRUE,
+    report_proportion = FALSE,
+    true_value = beta
+  )
 )
 ```
 
