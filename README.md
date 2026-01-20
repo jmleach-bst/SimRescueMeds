@@ -221,7 +221,7 @@ Y_i = \alpha + X_i\beta + \epsilon_i
 $$
 
 where $X_i$ is a binary predictor taking value 0 or 1 and
-$\epsilon_i \sim \mathcal{N}(0, \sigma^2$. This is straightforward and
+$\epsilon_i \sim \mathcal{N}(0, \sigma^2)$. This is straightforward and
 quick to simulate. Note that we would usually save both the data and the
 analysis, but for this demonstration it is unnecessary. Below we use
 `mcse_estimands()`, which reports several estimates and MCSE for some
