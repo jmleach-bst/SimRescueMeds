@@ -6,3 +6,5 @@
 .httr-oauth
 .DS_Store
 .quarto
+R/simulate_post_tte.R
+R/add_decay_fn.R
